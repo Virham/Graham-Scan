@@ -7,14 +7,27 @@ import time
 import json
 
 
+from Triangulation import Triangulation
+
 class Main:
     def __init__(self):
         self.win = pygame.display.set_mode((1280, 720))
 
         self.scale = 1
         self.generate_points = lambda: self.generate_random_points(30, 100, 100, 500, 500)
+
+        self.points = []
+        self.line = []
+        self.mesh = None
+
+        self.generate_new()
+
+        self.render_mesh = False
+
+    def generate_new(self):
         self.points = self.generate_points()
         self.line = self.graham_scan(self.points)
+        self.mesh = Triangulation(self.line).generate()
 
     def generate_random_points(self, amount, x, y, width, height):
         points = []
@@ -31,15 +44,18 @@ class Main:
         for point in self.points:
             pygame.draw.rect(self.win, (255, 255, 255), ((point[0] * self.scale), (point[1] * self.scale), self.scale, self.scale))
 
-        for i, point in enumerate(self.line):
-            p = (point[0] * self.scale, point[1] * self.scale)
-            nxt =self.line[(i + 1) % len(self.line)]
-            np = (nxt[0] * self.scale, nxt[1] * self.scale)
-            pygame.draw.line(self.win, (255, 0, 0), p, np, self.scale)
-            # pygame.draw.circle(self.win, (255, 0, 0), point, 3)
+        # for i, point in enumerate(self.line):
+        #     p = (point[0] * self.scale, point[1] * self.scale)
+        #     nxt =self.line[(i + 1) % len(self.line)]
+        #     np = (nxt[0] * self.scale, nxt[1] * self.scale)
+        #     pygame.draw.line(self.win, (255, 0, 0), p, np, self.scale)
+        #     # pygame.draw.circle(self.win, (255, 0, 0), point, 3)
 
-        for p in self.line:
-            pygame.draw.rect(self.win, (255, 255, 0), (p[0] * self.scale, p[1] * self.scale, self.scale, self.scale))
+        # for p in self.line:
+        #     pygame.draw.rect(self.win, (255, 255, 0), (p[0] * self.scale, p[1] * self.scale, self.scale, self.scale))
+
+        if self.render_mesh:
+            self.mesh.draw(self.win)
 
         pygame.display.update()
 
@@ -49,9 +65,12 @@ class Main:
                 if event.type == pygame.QUIT:
                     return
 
-                if event.type == pygame.KEYDOWN and event.key == pygame.K_f:
-                    self.points = self.generate_points()
-                    self.line = self.graham_scan(self.points)
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_f:
+                        self.generate_new()
+                    if event.key == pygame.K_t:
+                        self.render_mesh = not self.render_mesh
+
 
             self.draw()
 
