@@ -11,9 +11,7 @@ from Triangulation import Triangulation
 
 class Main:
     def __init__(self):
-        self.win = pygame.display.set_mode((1280, 720))
-
-        self.scale = 1
+        self.win = pygame.display.set_mode((720, 720))
         self.generate_points = lambda: self.generate_random_points(30, 100, 100, 500, 500)
 
         self.points = []
@@ -42,20 +40,16 @@ class Main:
         self.win.fill(0)
 
         for point in self.points:
-            pygame.draw.rect(self.win, (255, 255, 255), ((point[0] * self.scale), (point[1] * self.scale), self.scale, self.scale))
+            pygame.draw.circle(self.win, (255, 255, 255), point, 1)
 
-        # for i, point in enumerate(self.line):
-        #     p = (point[0] * self.scale, point[1] * self.scale)
-        #     nxt =self.line[(i + 1) % len(self.line)]
-        #     np = (nxt[0] * self.scale, nxt[1] * self.scale)
-        #     pygame.draw.line(self.win, (255, 0, 0), p, np, self.scale)
-        #     # pygame.draw.circle(self.win, (255, 0, 0), point, 3)
-
-        # for p in self.line:
-        #     pygame.draw.rect(self.win, (255, 255, 0), (p[0] * self.scale, p[1] * self.scale, self.scale, self.scale))
 
         if self.render_mesh:
             self.mesh.draw(self.win)
+
+        for i, point in enumerate(self.line):
+            nxt =self.line[(i + 1) % len(self.line)]
+            pygame.draw.line(self.win, (255, 0, 0), point, nxt, 1)
+            pygame.draw.circle(self.win, (255, 0, 0), point, 3)
 
         pygame.display.update()
 
